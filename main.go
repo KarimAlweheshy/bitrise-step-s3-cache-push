@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	BITRISE_GIT_BRANCH       = "BITRISE_GIT_BRANCH"
-	BITRISE_OSX_STACK_REV_ID = "BITRISE_OSX_STACK_REV_ID"
-
 	CACHE_AWS_ACCESS_KEY_ID     = "cache_aws_access_key_id"
 	CACHE_AWS_SECRET_ACCESS_KEY = "cache_aws_secret_access_key"
 	CACHE_AWS_REGION            = "cache_aws_region"
@@ -20,14 +17,6 @@ const (
 	CACHE_KEY                   = "cache_key"
 	CACHE_PATH                  = "cache_path"
 )
-
-func generateBucketKey(cacheKey string) (string, error) {
-	branch := os.Getenv(BITRISE_GIT_BRANCH)
-	stackrev := os.Getenv(BITRISE_OSX_STACK_REV_ID)
-	functionExecuter := cacheutil.NewCacheKeyFunctionExecuter(branch, stackrev)
-	keyParser := cacheutil.NewKeyParser(&functionExecuter)
-	return keyParser.Parse(cacheKey)
-}
 
 func main() {
 	awsAccessKeyId := GetEnvOrExit(CACHE_AWS_ACCESS_KEY_ID)
@@ -46,7 +35,7 @@ func main() {
 			awsSecretAccessKey,
 			bucketName,
 		)
-		bucketKey, err := generateBucketKey(cacheKey)
+		bucketKey = cacheKey
 
 		if err != nil {
 			log.Printf("Failed to parse cache key '%s'\n", cacheKey)
